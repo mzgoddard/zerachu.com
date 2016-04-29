@@ -8,4 +8,6 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['webpack-dev-server:dev']);
+  grunt.registerTask('build', ['build-env', 'webpack', 'build-static']);
+  grunt.registerTask('deploy', ['clean', 'build', 'copy', 'shell']);
 };
