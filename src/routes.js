@@ -1,6 +1,7 @@
-import BlogRoot from './blog-root';
-import BlogIndex from './blog-index';
+import BlogDrafts from './blog-drafts';
 import BlogEntry from './blog-entry';
+import BlogIndex from './blog-index';
+import BlogRoot from './blog-root';
 import Main from './main';
 
 import Home from '../pages/home/page';
@@ -16,6 +17,7 @@ export default {
       indexRoute: {component: BlogIndex},
       childRoutes: [
         {path: 'entry/:name', component: BlogEntry},
+        {path: 'drafts', component: BlogDrafts},
       ],
     },
   ],

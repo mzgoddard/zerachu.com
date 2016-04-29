@@ -5,7 +5,7 @@ import pages from '../pages';
 
 import autobind from './autobind';
 
-export default class BlogIndex extends Component {
+export default class BlogDrafts extends Component {
   handleBlogsUpdate() {
     this.setState({});
   }
@@ -19,13 +19,13 @@ export default class BlogIndex extends Component {
   }
 
   render() {
-    return (<div className={style['blog-index']}>
+    return (<div className={style['blog-drafts']}>
       {pages.blogsKeys()
-        .filter(key => pages.metas(key).public)
+        .filter(key => !pages.metas(key).public)
         .map(key => (
-        <Link to={`/blog/entry/${key}`}><div className={style['blog-index-entry']}>
+        <Link to={`/blog/entry/${key}`}><div className={style['blog-drafts-entry']}>
           <h1>{pages.metas(key).title || key}</h1>
-          <span className={style['blog-index-entry-date']}>{formatDate(new Date(pages.metas(key).public || pages.metas(key).created || new Date()))}</span>
+          <span className={style['blog-drafts-entry-date']}>{formatDate(new Date(pages.metas(key).public || pages.metas(key).created || new Date()))}</span>
 
           <p>{pages.metas(key).summary}</p>
         </div></Link>
@@ -34,7 +34,7 @@ export default class BlogIndex extends Component {
   }
 }
 
-autobind(BlogIndex);
+autobind(BlogDrafts);
 
 function formatDate(date) {
   return date.toLocaleDateString();
