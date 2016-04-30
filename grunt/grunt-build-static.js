@@ -45,6 +45,7 @@ module.exports = function(grunt) {
         routes: [
           '/',
           'blog',
+          'blog/drafts',
         ]
         .concat(fs.readdirSync('pages')
           .filter(function(name) {

@@ -1,6 +1,6 @@
 var HtmlPlugin = require('html-webpack-plugin');
 
-var fileExtensions = ['ttf'];
+var fileExtensions = ['ttf', 'woff'];
 
 // var routes = [
 //   '/',
@@ -42,12 +42,7 @@ module.exports = {
         loader: 'remarkable-loader',
       },
     ]
-    .concat(fileExtensions.map(function(ext) {
-      return {
-        test: new RegExp('\\.' + ext + '$'),
-        loader: 'file-loader',
-      };
-    })),
+    .concat(require('./webpack.extensions').loaders),
   },
   resolve: {
     extensions: ['', '.js', '.jsx', '.md'],

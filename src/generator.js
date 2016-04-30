@@ -80,6 +80,7 @@ export default function bake(location, template) {
   // .then((carry) => {console.log(carry); return carry;})
   .then(baked => (
     template
+    .replace('<div id=root></div>', '<div id="root"></div>')
     .replace('<div id="root"></div>', `<div id="root">${baked.root}</div>`)
     .replace('</script>', [].concat.apply([], baked.scripts).reduce((carry, script) => {
       return carry +
