@@ -5,6 +5,7 @@ import BlogRoot from './blog-root';
 import Main from './main';
 
 import Home from '../pages/home/page';
+import Games from '../pages/games/page';
 
 export default {
   path: '/',
@@ -19,6 +20,10 @@ export default {
         {path: 'entry/:name', component: BlogEntry},
         {path: 'drafts', component: BlogDrafts},
       ],
+    },
+    {
+      path: 'games',
+      component: Games,
     },
   ],
 };

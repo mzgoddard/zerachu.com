@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {findDOMNode} from 'react-dom';
 import {renderToString} from 'react-dom/server';
 
 import autobind from './autobind';
@@ -50,7 +51,17 @@ export default class Page extends Component {
   }
 
   get entryHtml() {
-    return {__html: Array.isArray(this.state.entry) ? this.state.entry[0] : this.state.entry};
+    let html = typeof this.state.entry === 'object' ?
+      this.state.entry.content :
+      this.state.entry;
+    if (
+      typeof this.state.entry === 'object' &&
+      typeof window === 'undefined' &&
+      this.state.entry.mountString
+    ) {
+      html = this.state.entry.mountString(html);
+    }
+    return {__html: html};
   }
 
   handleEntriesUpdate() {
@@ -63,10 +74,30 @@ export default class Page extends Component {
     pages.addListener(this.handleEntriesUpdate);
   }
 
-  componentDidUpdate() {}
+  componentWillUpdate() {
+    if (typeof this.state.entry === 'object' && this.state.entry.unmount) {
+      this.state.entry.unmount(findDOMNode(this));
+    }
+  }
+
+  componentDidMount() {
+    if (typeof this.state.entry === 'object' && this.state.entry.unmount) {
+      this.state.entry.mount(findDOMNode(this));
+    }
+  }
+
+  componentDidUpdate() {
+    if (typeof this.state.entry === 'object' && this.state.entry.mount) {
+      this.state.entry.mount(findDOMNode(this));
+    }
+  }
 
   componentWillUnmount() {
     pages.removeListener(this.handleEntriesUpdate);
+
+    if (typeof this.state.entry === 'object' && this.state.entry.mount) {
+      this.state.entry.unmount(findDOMNode(this));
+    }
   }
 
   render() {

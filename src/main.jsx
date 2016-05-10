@@ -10,10 +10,8 @@ export default class Main extends Component {
         <div className="main-title">zerachu.com <span className="main-info"> | Z Goddard</span></div>
         <div className="main-nav">
           <IndexLink to="/" activeClassName="active"><span>home</span></IndexLink>
-          <Link to="/about/"><span>about</span></Link>
           <Link to="/blog/" activeClassName="active"><span>blog</span></Link>
-          <Link to=""><span>games</span></Link>
-          <Link to=""><span>open source</span></Link>
+          <Link to="/games/"><span>games</span></Link>
         </div>
       </div></div>
       <div className="main-content">
