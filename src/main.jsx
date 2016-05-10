@@ -11,7 +11,7 @@ export default class Main extends Component {
         <div className="main-nav">
           <IndexLink to="/" activeClassName="active"><span>home</span></IndexLink>
           <Link to="/blog/" activeClassName="active"><span>blog</span></Link>
-          <Link to="/games/"><span>games</span></Link>
+          <Link to="/games/" activeClassName="active"><span>games</span></Link>
         </div>
       </div></div>
       <div className="main-content">
