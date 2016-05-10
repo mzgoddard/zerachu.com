@@ -46,6 +46,7 @@ module.exports = function(grunt) {
           '/',
           'blog',
           'blog/drafts',
+          'games',
         ]
         .concat(fs.readdirSync('pages')
           .filter(function(name) {
