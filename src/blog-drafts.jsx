@@ -19,9 +19,14 @@ export default class BlogDrafts extends Component {
   }
 
   render() {
+    let drafts = pages.blogsKeys()
+    .filter(key => !pages.metas(key).public);
+    drafts.sort((a, b) => (
+      (pages.metas(b).created ? new Date(pages.metas(b).created) : 0) -
+      (pages.metas(a).created ? new Date(pages.metas(a).created) : 0)
+    ));
     return (<div className={style['blog-drafts']}>
-      {pages.blogsKeys()
-        .filter(key => !pages.metas(key).public)
+      {drafts
         .map(key => (
         <Link to={`/blog/entry/${key}`}><div className={style['blog-drafts-entry']}>
           <h1>{pages.metas(key).title || key}</h1>

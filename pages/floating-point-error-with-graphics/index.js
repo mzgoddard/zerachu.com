@@ -64,7 +64,7 @@ class FloatingError extends Component {
   render() {
     return <div ref="root" style={{
       position: 'relative',
-      width: 292,
+      width: '100%',
       paddingBottom: `${100 / 12}%`,
       margin: '0 auto',
     }}>
@@ -92,7 +92,7 @@ class FloatingFix extends Component {
   render() {
     return <div ref="root" style={{
       position: 'relative',
-      width: 292,
+      width: '100%',
       paddingBottom: `${100 / 12}%`,
       margin: '0 auto',
     }}>

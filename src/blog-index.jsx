@@ -19,9 +19,14 @@ export default class BlogIndex extends Component {
   }
 
   render() {
+    let blogs = pages.blogsKeys()
+    .filter(key => pages.metas(key).public);
+    blogs.sort((a, b) => (
+      (pages.metas(b).public ? new Date(pages.metas(b).public) : 0) -
+      (pages.metas(a).public ? new Date(pages.metas(a).public) : 0)
+    ));
     return (<div className={style['blog-index']}>
-      {pages.blogsKeys()
-        .filter(key => pages.metas(key).public)
+      {blogs
         .map(key => (
         <Link to={`/blog/entry/${key}`}><div className={style['blog-index-entry']}>
           <h1>{pages.metas(key).title || key}</h1>
