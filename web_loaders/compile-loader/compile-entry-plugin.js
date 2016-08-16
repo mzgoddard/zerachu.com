@@ -11,6 +11,10 @@ function CompileEntryPlugin() {
 
 CompileEntryPlugin.prototype.apply = function(compiler) {
   compiler.plugin('compilation', function(compilation, params) {
+    compilation.mainTemplate.plugin("global-hash", function() {
+      return false;
+    });
+
     params.normalModuleFactory.plugin('resolver', function(resolver) {
       return function(data, callback) {
         if (/^\/compile-entry/.test(data.request)) {

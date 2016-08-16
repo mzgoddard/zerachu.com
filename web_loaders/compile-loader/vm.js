@@ -1,5 +1,5 @@
 (function() {
-  require([], function() {require('./dummy');});
+  require.ensure([], function() {require('!!./dummy');}, 'compiler-loader-dummy');
 });
 
 module.exports = function(getInfo, path) {

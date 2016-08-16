@@ -5,6 +5,7 @@ var loaderUtils = require('loader-utils');
 module.exports = function() {};
 
 module.exports.pitch = function(remainingRequest) {
+  this.cacheable();
   var vm = 'web-dev-vm';
   if (this.options.target === 'node') {
     vm = 'node-vm';
@@ -12,5 +13,11 @@ module.exports.pitch = function(remainingRequest) {
   else if (process.env.NODE_ENV === 'production') {
     vm = 'web-vm';
   }
-  return 'module.exports = require(' + loaderUtils.stringifyRequest(this, '!!' + __dirname + '/vm.js') + ')(require(' + loaderUtils.stringifyRequest(this, '!!' + __dirname + '/' + vm + '.js') + '), ' + JSON.stringify(path.relative(this.options.context, remainingRequest)) + ');';
+  var vmPath = loaderUtils.stringifyRequest(this, '!!' + __dirname + '/vm.js');
+  var subvmPath = loaderUtils.stringifyRequest(this, '!!' + __dirname + '/' + vm + '.js');
+  var remaining = JSON.stringify(path.relative(this.options.context, remainingRequest));
+  return 'module.exports = require(' + vmPath + ')(' +
+    'require(' + subvmPath + '), ' +
+    remaining +
+  ');';
 };
