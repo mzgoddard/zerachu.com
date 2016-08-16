@@ -3,6 +3,8 @@ import {IndexLink, Link} from 'react-router';
 
 import autobind from './autobind';
 
+import 'highlight.js/styles/hybrid.css';
+
 export default class Main extends Component {
   render() {
     return (<div className="main" onClick={() => {}}>

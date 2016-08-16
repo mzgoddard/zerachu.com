@@ -31,8 +31,12 @@ module.exports = {
         loader: 'baggage-loader?[file].styl=style',
       },
       {
+        test: /\.(styl|css)$/,
+        loader: 'style-loader!css-loader',
+      },
+      {
         test: /\.styl$/,
-        loader: 'style-loader!css-loader!stylus-loader',
+        loader: 'stylus-loader',
       },
       {
         test: /\.(html|md)$/,
