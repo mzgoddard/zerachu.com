@@ -17,7 +17,8 @@ module.exports = {
   output: {
     filename: '[name].js',
   },
-  devtool: 'source-map',
+  // devtool: 'source-map',
+  recordsPath: __dirname + '/dist-module-cache/records.json',
   module: {
     loaders: [
       {
@@ -53,6 +54,11 @@ module.exports = {
       template: 'src/index.html',
       filename: 'index.html',
       chunks: ['main'],
+    })
+  )
+  .concat(
+    new (require('hard-source-webpack-plugin'))({
+      cacheDirectory: 'dist-module-cache',
     })
   ),
   // .concat(routes.map(function(route) {
