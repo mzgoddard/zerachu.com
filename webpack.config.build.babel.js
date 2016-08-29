@@ -45,6 +45,13 @@ module.exports = {
           'style-loader', 'css-loader!stylus-loader'
         ),
       },
+      {
+        test: /\.css$/,
+        // exclude: /src[\/\\]index\.styl$/,
+        loader: normalStyleExtract.extract(
+          'style-loader', 'css-loader'
+        ),
+      },
       // {
       //   test: /src[\/\\]index\.styl$/,
       //   loader: importantStyleExtract.extract(

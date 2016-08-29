@@ -3,7 +3,8 @@ import {IndexLink, Link} from 'react-router';
 
 import autobind from './autobind';
 
-import 'highlight.js/styles/hybrid.css';
+// import 'highlight.js/styles/hybrid.css';
+import 'highlight.js/styles/tomorrow-night.css';
 
 export default class Main extends Component {
   render() {

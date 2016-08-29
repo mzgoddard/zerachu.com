@@ -12,7 +12,7 @@ export default class BlogEntry extends Page {
     const key = this.props.params.name;
     return (<div className={style['blog-entry']}>
       <h1>{pages.metas(key).title || key}</h1>
-      <span>{new Date(
+      <span className={style['blog-entry-date']}>{new Date(
         pages.metas(key).public ||
         pages.metas(key).created ||
         Date.now()

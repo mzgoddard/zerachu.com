@@ -62,7 +62,7 @@ module.exports = {
   )
   .concat(
     new (require('hard-source-webpack-plugin'))({
-      cacheDirectory: 'dist-module-cache',
+      cacheDirectory: __dirname + '/dist-module-cache',
     })
   ),
   // .concat(routes.map(function(route) {

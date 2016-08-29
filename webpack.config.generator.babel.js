@@ -38,6 +38,10 @@ module.exports = {
         loader: 'css-loader/locals!stylus-loader',
       },
       {
+        test: /\.css$/,
+        loader: 'css-loader/locals',
+      },
+      {
         test: /\.(html|md)$/,
         loader: 'html-loader',
       },
