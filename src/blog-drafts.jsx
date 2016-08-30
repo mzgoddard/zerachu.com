@@ -30,7 +30,7 @@ export default class BlogDrafts extends Component {
         .map(key => (
         <Link to={`/blog/entry/${key}`}><div className={style['blog-drafts-entry']}>
           <h1>{pages.metas(key).title || key}</h1>
-          <span className={style['blog-drafts-entry-date']}>{formatDate(new Date(pages.metas(key).public || pages.metas(key).created || new Date()))}</span>
+          <span className={style['blog-drafts-entry-date']}>{formatDate(new Date(pages.metas(key).public || pages.metas(key).created || new Date()))} DRAFT</span>
 
           <p>{pages.metas(key).summary}</p>
         </div></Link>

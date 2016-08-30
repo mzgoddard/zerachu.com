@@ -16,7 +16,7 @@ export default class BlogEntry extends Page {
         pages.metas(key).public ||
         pages.metas(key).created ||
         Date.now()
-      ).toLocaleDateString()}</span>
+      ).toLocaleDateString()} {pages.metas(key).public ? '' : 'DRAFT'}</span>
       <div className={style['blog-entry-content']} dangerouslySetInnerHTML={this.entryHtml}></div>
     </div>);
   }
