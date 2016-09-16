@@ -133,7 +133,7 @@ Handling that case where this snippet isn't handed an image is like anything so 
 return JSON.stringify(markdownItem);
 ```
 
-## Build that loader
+## Putting it together
 
 We have arrived at the point where we can build our transformation and so build our loader. The final thing we need to do is find all the image tags in a given markdown file. Like breaking up a markdown image we will use a second regular expression to find our image tags and we will do that by splitting the markdown content with that second expression.
 
@@ -141,24 +141,27 @@ We have arrived at the point where we can build our transformation and so build 
 var imageRE = /(\!\[[^\]]*\]\([^\)]+\))/g;
 ```
 
+The expression includes the whole match as a group. When used with javascript's string split method this will retain the matched parts that split normally would not include in the returned array. This way we will get an array with markdown images and everything else. We can then transform those parts so images are transformed like we did in the last section and stringify everything else. Joining the members of that array back together will turn out most of the the code coming out of this loader.
+
 ```javascript
-content.split(imageRE)
-.map(requestImage)
-.join(' +\n')
+content.split(imageRE).map(requestImage).join(',\n')
 ```
+
+With everyting up to now put together we can arrive at a complete webpack loader.
 
 ```javascript
 var imageRE = /(\!\[[^\]]*\]\([^\)]+\))/g;
 module.exports = function(content) {
   this.cacheable && this.cacheable();
-  return 'module.exports = ' +
-    content.split(imageRE)
-    .map(requestImage)
-    .join(' +\n') + ';';
+  return (
+    'module.exports = [\n' +
+    content.split(imageRE).map(requestImage).join(',\n') +
+    '\n].join();'
+  );
 };
 
+var partRE = /(\!\[[^\]]*\]\()([^\)]+)(\))/g;
 function requestImage(markdownItem) {
-  var partRE = /(\!\[[^\]]*\]\()([^\)]+)(\))/g;
   var parts = partRE.exec(markdownItem);
   if (parts) {
     var request = loaderUtils.stringifyRequest(
@@ -173,3 +176,48 @@ function requestImage(markdownItem) {
   return JSON.stringify(markdownItem);
 }
 ```
+
+## Using the loader
+
+Since this is a project specific loader instead of one we might publish to `npm`, we'll store it locally in our project. Webpack by default configures some places we can put this loader. The first is a folder called `web_loaders` that is used like `node_modules`. We can put our loader in `web_loaders` as an individual file called `markdown-image-loader.js` or as an index file like `markdown-image-loader/index.js`.
+
+So storing the loader at say `web_loaders/markdown-image-loader/index.js` we can then require markdown files in webpacked javascript like:
+
+```javascript
+var pageBody = require('markdown-image-loader!./body.md');
+```
+
+Or set up an auto loader in the webpack config:
+
+```javascript
+module.exports = {
+  // Other webpack configuration ...
+
+  module: {
+    loaders: [
+      {
+        test: /\.md$/,
+        loader: 'markdown-image-loader',
+      },
+    ],
+  },
+};
+```
+
+And require markdown with the loader automatically.
+
+```javascript
+var pageBody = require('./body.md');
+```
+
+## Thinking about this story
+
+Extending webpack does not need to be a massive task. You can use webpack in a project with custom files or existing types but with some processing on it that isn't available without needing a complicated addition to the build process.
+
+Building such a loader you need to:
+
+- Transform the content into a javascript value, probably a string
+- Transform parts of the content that are references into requests for other needed files like images
+- Export the built value so parts of your application can use it
+
+Webpack provides a lot of the busy work for you like reading in and writing out content. You can focus just on getting the info you need.
