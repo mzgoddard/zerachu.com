@@ -49,6 +49,8 @@ module.exports = ".portrait {\n  background: url('" + require("./portrait.png") 
 
 For a project specific loader we can take that spirit and apply restrictions to keep our loader simple.
 
+## Consuming markdown
+
 To build the references to images like css-loader for untransformed markdown we'll want to tranform:
 
 ```markdown
@@ -66,41 +68,108 @@ To do this lets consider replacing a given markdown image with the js code to cr
 We already know how to transform the parts wrapping the url. Those are stringified like `raw-loader` does.
 
 ```javascript
-JSON.stringify(part[1])
+JSON.stringify(parts[1])
 ```
+
+## Working with URLs
 
 Transforming the url part means we need to bring in some other details of webpack.
 
-- urlToRequest
-- stringifyRequest
-- wrap with require
-- join parts
-- regex to get parts
-- what do to if regex doesn't match
-- consuming markdown
-- regex to find markdown images
-- putting it all together
+Webpack distinguishes between urls and requests. Urls are what you seen in css, html and markdown. Requests are what you see in CommonJS and Harmony modules. For users these are two different representations of paths and have different assumptions. A url like `'image.png'` is a relative path to such a file. A request like `'image.png'` is a reference to library installed in a folder like `node_modules`. To have a relative request to image.png it'd need to look like `'./image.png'`. Urls in webpack can point to modules as well by being prefixed with a tilde, like `~image.png` would point at a library.
+
+Webpack has this idiom since its first a javascript module bundler but wants to support working with other file types. Without projects needing to rewrite their urls into requests, webpack created this idiom so most css and other types could be consumed without further change.
+
+To do this transformation without writing it ourselves we can use the npm package `loader-utils`. It has a function urlToRequest that we can use.
 
 ```javascript
-var splitRE = /(\!\[[^\]]*\]\([^\)]+\))/g;
-var matchRE = /(\!\[[^\]]*\]\()([^\)]+)(\))/g;
+loaderUtils.urlToRequest(parts[2])
+```
+
+Next we need to stringify it. For urls we could use JSON.stringify still but lets use another utility in `loader-utils`.
+
+```javascript
+loaderUtils.stringifyRequest(loaderUtils.urlToRequest(parts[2]))
+```
+
+## Pulling the tag apart
+
+Right now this would be a string constant in our output, we want webpack to build in that asset and with the webpack config return us a url through `file-loader` or other loader. Here we need to wrap our stringified request in a call to require.
+
+```javascript
+var request = loaderUtils.stringifyRequest(
+  loaderUtils.urlToRequest(parts[2])
+);
+'require(' + request + ')'
+```
+
+So we need to build `part`. For this simpler loader we don't need a full parser to figure that out. We will use a regular expression and it will matches three parts, everything before the url `\!\[[^\]]*\]\(`, the url `[^\)]+`, and everything after `\)`. Put together we have an expression that will match the parts of a markdown image tag.
+
+```javascript
+var partRE = /(\!\[[^\]]*\]\()([^\)]+)(\))/g;
+```
+
+With that we can take apart a given image tag, transform it, and put together the code that'll build it at runtime.
+
+```javascript
+var partRE = /(\!\[[^\]]*\]\()([^\)]+)(\))/g;
+var parts = partRE.exec(markdownItem);
+if (parts) {
+  var request = loaderUtils.stringifyRequest(
+    loaderUtils.urlToRequest(parts[2])
+  );
+  return [
+    JSON.stringify(parts[1]),
+    'require(' + request + ')',
+    JSON.stringify(parts[3])
+  ].join(' + ');
+}
+```
+
+We've written this part to break up the parts but also test that that happened. We can handle if what we were passed isn't an image so this can be called on any split up parts of a markdown file.
+
+Handling that case where this snippet isn't handed an image is like anything so far. We will stringify it too.
+
+```javascript
+return JSON.stringify(markdownItem);
+```
+
+## Build that loader
+
+We have arrived at the point where we can build our transformation and so build our loader. The final thing we need to do is find all the image tags in a given markdown file. Like breaking up a markdown image we will use a second regular expression to find our image tags and we will do that by splitting the markdown content with that second expression.
+
+```javascript
+var imageRE = /(\!\[[^\]]*\]\([^\)]+\))/g;
+```
+
+```javascript
+content.split(imageRE)
+.map(requestImage)
+.join(' +\n')
+```
+
+```javascript
+var imageRE = /(\!\[[^\]]*\]\([^\)]+\))/g;
 module.exports = function(content) {
   this.cacheable && this.cacheable();
-  return 'module.exports = ' + content
-  .split(splitRE)
-  .map(function(piece) {
-    var match = matchRE.exec(piece);
-    if (match) {
-      return (
-        JSON.stringify(match[1]) +
-        ' + require(' +
-        JSON.stringify('./' + match[2]) +
-        ') + ' +
-        JSON.stringify(match[3])
-      );
-    }
-    return JSON.stringify(piece);
-  })
-  .join(' +\n') + ';';
+  return 'module.exports = ' +
+    content.split(imageRE)
+    .map(requestImage)
+    .join(' +\n') + ';';
 };
+
+function requestImage(markdownItem) {
+  var partRE = /(\!\[[^\]]*\]\()([^\)]+)(\))/g;
+  var parts = partRE.exec(markdownItem);
+  if (parts) {
+    var request = loaderUtils.stringifyRequest(
+      loaderUtils.urlToRequest(parts[2])
+    );
+    return [
+      JSON.stringify(parts[1]),
+      'require(' + request + ')',
+      JSON.stringify(parts[3])
+    ].join(' + ');
+  }
+  return JSON.stringify(markdownItem);
+}
 ```
