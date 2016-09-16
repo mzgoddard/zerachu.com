@@ -1,0 +1,1 @@
+webpackJsonp([27],{349:function(l,i){l.exports="<h1>some examples</h1> <ul> <li>sinon</li> <li>fabric</li> <li>jquery &lt; 2</li> </ul>"}});
